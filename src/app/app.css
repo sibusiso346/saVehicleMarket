@@ -54,42 +54,42 @@
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 3rem;
+  padding: 0 2rem;
   width: 100%;
 }
 
 @media (max-width: 1200px) {
   .container {
-    padding: 0 2.5rem;
+    padding: 0 2rem;
   }
 }
 
 @media (max-width: 1024px) {
   .container {
-    padding: 0 2rem;
+    padding: 0 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 1.5rem;
+    padding: 0 1.25rem;
   }
 }
 
 @media (max-width: 640px) {
   .container {
-    padding: 0 1.25rem;
+    padding: 0 1rem;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
 }
 
 @media (max-width: 360px) {
   .container {
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
   }
 }

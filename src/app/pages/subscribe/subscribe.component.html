@@ -1,0 +1,112 @@
+<div class="subscribe-container">
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="subscribe-hero">
+      <h1 class="hero-title">Choose Your Perfect Plan</h1>
+      <p class="hero-subtitle">Unlock premium features and get the most out of SA Vehicle Market</p>
+      <div class="hero-badges">
+        <span class="badge">30-Day Free Trial</span>
+        <span class="badge">Cancel Anytime</span>
+        <span class="badge">No Setup Fees</span>
+      </div>
+    </div>
+
+    <!-- Pricing Plans -->
+    <div class="pricing-section">
+      <div class="pricing-toggle">
+        <span class="toggle-label" [class.active]="!isYearly">Monthly</span>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="isYearly" (change)="onToggleChange()">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label" [class.active]="isYearly">Yearly <span class="discount">Save 20%</span></span>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="pricing-card" *ngFor="let plan of subscriptionPlans" [class.popular]="plan.popular">
+          <div class="card-header">
+            <h3 class="plan-name">{{ plan.name }}</h3>
+            <p class="plan-description">{{ plan.description }}</p>
+            <div class="plan-price">
+              <span class="price-amount">R{{ getPrice(plan) }}</span>
+              <span class="price-period">/{{ plan.period }}</span>
+            </div>
+            <div class="plan-savings" *ngIf="isYearly && plan.id !== 'free'">
+              <span class="savings-text">Save R{{ getSavings(plan) }} per year</span>
+            </div>
+          </div>
+          
+          <div class="card-features">
+            <ul class="features-list">
+              <li *ngFor="let feature of plan.features" class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {{ feature }}
+              </li>
+            </ul>
+          </div>
+          
+          <div class="card-footer">
+            <button class="subscribe-btn" [class.primary]="plan.popular" (click)="selectPlan(plan)">
+              {{ plan.id === 'free' ? 'Get Started' : 'Subscribe Now' }}
+            </button>
+            <p class="trial-text" *ngIf="plan.id !== 'free'">Start with 30-day free trial</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Comparison -->
+    <div class="features-comparison">
+      <h2 class="section-title">Compare All Features</h2>
+      <div class="comparison-table">
+        <div class="table-header">
+          <div class="feature-column">Features</div>
+          <div class="plan-column" *ngFor="let plan of subscriptionPlans">
+            <span class="plan-title">{{ plan.name }}</span>
+          </div>
+        </div>
+        
+        <div class="table-row" *ngFor="let feature of comparisonFeatures">
+          <div class="feature-name">{{ feature.name }}</div>
+          <div class="feature-value" *ngFor="let plan of subscriptionPlans">
+            <span class="value" [class.available]="isFeatureAvailable(plan.id, feature.key)">
+              {{ getFeatureValue(plan.id, feature.key) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <div class="faq-item" *ngFor="let faq of faqs; let i = index">
+          <div class="faq-question" (click)="toggleFAQ(i)">
+            <h3>{{ faq.question }}</h3>
+            <svg class="faq-icon" [class.open]="openFAQ === i" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="faq-answer" [class.open]="openFAQ === i">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+      <div class="cta-content">
+        <h2>Ready to Get Started?</h2>
+        <p>Join thousands of satisfied customers who trust SA Vehicle Market for their vehicle needs.</p>
+        <div class="cta-buttons">
+          <button class="cta-btn primary" (click)="scrollToPricing()">View Pricing Plans</button>
+          <button class="cta-btn secondary" (click)="contactSupport()">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,205 +1,137 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-signin',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
-<div class="auth-container">
-  <div class="auth-card">
-    <h1 class="auth-title">{{ title }}</h1>
-    <p class="auth-subtitle">Welcome back! Please sign in to your account.</p>
-    
-    <form class="auth-form">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-      </div>
-      
-      <div class="form-options">
-        <label class="checkbox-label">
-          <input type="checkbox" name="remember">
-          <span class="checkmark"></span>
-          Remember me
-        </label>
-        <a href="#" class="forgot-password">Forgot password?</a>
-      </div>
-      
-      <button type="submit" class="auth-button">Sign In</button>
-    </form>
-    
-    <div class="auth-footer">
-      <p>Don't have an account? <a routerLink="/signup" class="auth-link">Sign up here</a></p>
-    </div>
-  </div>
-</div>
-  `,
-  styles: [`
-.auth-container {
-  min-height: calc(100vh - 70px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
-
-.auth-card {
-  background: white;
-  border-radius: 16px;
-  padding: 2.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-.auth-title {
-  font-family: var(--font-heading);
-  font-size: var(--text-3xl);
-  font-weight: var(--font-bold);
-  text-align: center;
-  margin-bottom: 0.5rem;
-  color: #1f2937;
-}
-
-.auth-subtitle {
-  font-family: var(--font-primary);
-  text-align: center;
-  color: #6b7280;
-  margin-bottom: 2rem;
-  font-size: var(--text-sm);
-  line-height: var(--leading-relaxed);
-}
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-group label {
-  font-family: var(--font-primary);
-  font-weight: var(--font-semibold);
-  color: #374151;
-  font-size: var(--text-sm);
-}
-
-.form-group input {
-  padding: 0.75rem 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-family: var(--font-primary);
-  font-size: var(--text-base);
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  color: #374151;
-}
-
-.checkbox-label input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: #3b82f6;
-}
-
-.forgot-password {
-  color: #3b82f6;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.forgot-password:hover {
-  text-decoration: underline;
-}
-
-.auth-button {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: white;
-  border: none;
-  padding: 0.875rem 1.5rem;
-  border-radius: 8px;
-  font-family: var(--font-primary);
-  font-weight: var(--font-semibold);
-  font-size: var(--text-base);
-  letter-spacing: var(--tracking-wide);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-}
-
-.auth-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.auth-footer {
-  text-align: center;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.auth-footer p {
-  color: #6b7280;
-  font-size: 0.9rem;
-}
-
-.auth-link {
-  color: #3b82f6;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.auth-link:hover {
-  text-decoration: underline;
-}
-
-@media (max-width: 480px) {
-  .auth-container {
-    padding: 1rem;
-  }
-  
-  .auth-card {
-    padding: 2rem;
-  }
-  
-  .auth-title {
-    font-size: 1.75rem;
-  }
-}
-  `]
+  imports: [CommonModule, RouterModule, FormsModule],
+  templateUrl: './signin.component.html',
+  styleUrl: './signin.component.css'
 })
-export class SigninComponent {
+export class SigninComponent implements OnInit {
   title = 'Sign In';
+  
+  // Form data
+  loginData = {
+    email: '',
+    password: '',
+    rememberMe: false
+  };
+  
+  // UI state
+  showPassword = false;
+  isLoading = false;
+  
+  // Toggle password visibility
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+  
+  // Handle form submission
+  onSubmit(): void {
+    if (this.isLoading) return;
+    
+    this.isLoading = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+      console.log('Login attempt:', this.loginData);
+      
+      // Handle remember me (only in browser)
+      if (typeof localStorage !== 'undefined') {
+        if (this.loginData.rememberMe) {
+          localStorage.setItem('rememberedEmail', this.loginData.email);
+        } else {
+          localStorage.removeItem('rememberedEmail');
+        }
+      }
+      
+      // Reset form and loading state
+      this.isLoading = false;
+      
+      // Show success message (in real app, redirect to dashboard)
+      this.showNotification('Login successful!', 'success');
+      
+      // Reset form
+      this.loginData = {
+        email: '',
+        password: '',
+        rememberMe: false
+      };
+    }, 2000);
+  }
+  
+  // Handle Google sign in
+  signInWithGoogle(): void {
+    if (this.isLoading) return;
+    
+    this.isLoading = true;
+    
+    // Simulate Google OAuth flow
+    setTimeout(() => {
+      console.log('Google sign in attempt');
+      this.isLoading = false;
+      this.showNotification('Google sign in successful!', 'success');
+    }, 1500);
+  }
+  
+  
+  // Show notification
+  private showNotification(message: string, type: 'success' | 'error'): void {
+    // Only show notifications in browser
+    if (typeof document === 'undefined') return;
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // Add styles
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      color: white;
+      font-weight: 500;
+      font-family: var(--font-primary);
+      z-index: 1001;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      ${type === 'success' ? 'background: linear-gradient(135deg, #10b981 0%, #059669 100%);' : 'background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);'}
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+      notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 4 seconds
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          document.body.removeChild(notification);
+        }
+      }, 300);
+    }, 4000);
+  }
+  
+  // Load remembered email on component init
+  ngOnInit(): void {
+    // Only access localStorage in browser
+    if (typeof localStorage !== 'undefined') {
+      const rememberedEmail = localStorage.getItem('rememberedEmail');
+      if (rememberedEmail) {
+        this.loginData.email = rememberedEmail;
+        this.loginData.rememberMe = true;
+      }
+    }
+  }
 }
