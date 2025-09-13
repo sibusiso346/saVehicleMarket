@@ -54,6 +54,7 @@
   letter-spacing: var(--tracking-wide);
 }
 
+
 /* Right Section: Subscribe, Sign In, Sign Up */
 .nav-right {
   flex: 0 0 auto;
@@ -195,6 +196,7 @@
   gap: 1rem;
   align-items: center;
 }
+
 
 .mobile-buttons-row {
   display: flex;

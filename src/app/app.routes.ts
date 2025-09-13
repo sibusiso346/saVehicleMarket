@@ -9,5 +9,6 @@ export const routes: Routes = [
   { path: 'forgot-password', loadComponent: () => import('./pages/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
   { path: 'terms-of-service', loadComponent: () => import('./pages/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent) },
   { path: 'privacy-policy', loadComponent: () => import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent) },
+  { path: 'browse-vehicles', loadComponent: () => import('./pages/browse-vehicles/browse-vehicles.component').then(m => m.BrowseVehiclesComponent) },
   { path: '**', redirectTo: '' }
 ];

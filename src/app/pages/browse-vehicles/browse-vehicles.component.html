@@ -1,0 +1,337 @@
+<div class="browse-container">
+  <div class="container">
+    <!-- Header Section -->
+    <div class="browse-header">
+      <h1 class="browse-title">Browse Vehicles</h1>
+      <p class="browse-subtitle">Find your perfect vehicle from our extensive collection</p>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-section">
+      <!-- Search and Category Row -->
+      <div class="search-category-row">
+        <!-- Category Dropdown -->
+        <div class="category-dropdown">
+          <select 
+            [(ngModel)]="selectedCategory"
+            (change)="onCategoryChange()"
+            class="category-select"
+          >
+            <option *ngFor="let category of categories" [value]="category.value">
+              {{ getCategoryIcon(category.value) }} {{ category.label }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="search-input-group">
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()"
+            placeholder="Search for vehicles, brands, models..."
+            class="search-input"
+          >
+          <button 
+            *ngIf="searchQuery" 
+            class="clear-btn" 
+            (click)="clearSearch()"
+            type="button"
+            title="Clear search"
+          >
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="m15 9-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button 
+            (click)="toggleAdvancedSearch()"
+            class="advanced-toggle-btn"
+            [class.active]="showAdvancedSearch"
+            type="button"
+            title="Filter"
+          >
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Filter
+          </button>
+          <button class="search-btn" (click)="onSearch()">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Advanced Search Panel -->
+      <div class="advanced-search" [class.show]="showAdvancedSearch">
+        <div class="filters-grid">
+          <!-- Brand Filter -->
+          <div class="filter-group">
+            <label>Brand</label>
+            <select [(ngModel)]="filters.brand" (change)="applyFilters()">
+              <option value="">All Brands</option>
+              <option *ngFor="let brand of brands" [value]="brand">{{ brand }}</option>
+            </select>
+          </div>
+
+          <!-- Price Range -->
+          <div class="filter-group">
+            <label>Price Range</label>
+            <div class="range-inputs">
+              <input 
+                type="number" 
+                [(ngModel)]="filters.minPrice"
+                (input)="applyFilters()"
+                placeholder="Min Price"
+                class="range-input"
+              >
+              <span class="range-separator">to</span>
+              <input 
+                type="number" 
+                [(ngModel)]="filters.maxPrice"
+                (input)="applyFilters()"
+                placeholder="Max Price"
+                class="range-input"
+              >
+            </div>
+          </div>
+
+          <!-- Year Range -->
+          <div class="filter-group">
+            <label>Year Range</label>
+            <div class="range-inputs">
+              <input 
+                type="number" 
+                [(ngModel)]="filters.minYear"
+                (input)="applyFilters()"
+                placeholder="Min Year"
+                class="range-input"
+                min="1990"
+                max="2024"
+              >
+              <span class="range-separator">to</span>
+              <input 
+                type="number" 
+                [(ngModel)]="filters.maxYear"
+                (input)="applyFilters()"
+                placeholder="Max Year"
+                class="range-input"
+                min="1990"
+                max="2024"
+              >
+            </div>
+          </div>
+
+          <!-- Fuel Type -->
+          <div class="filter-group">
+            <label>Fuel Type</label>
+            <select [(ngModel)]="filters.fuelType" (change)="applyFilters()">
+              <option value="">All Fuel Types</option>
+              <option *ngFor="let fuel of fuelTypes" [value]="fuel">{{ fuel }}</option>
+            </select>
+          </div>
+
+          <!-- Transmission -->
+          <div class="filter-group">
+            <label>Transmission</label>
+            <select [(ngModel)]="filters.transmission" (change)="applyFilters()">
+              <option value="">All Transmissions</option>
+              <option *ngFor="let trans of transmissions" [value]="trans">{{ trans }}</option>
+            </select>
+          </div>
+
+          <!-- Condition -->
+          <div class="filter-group">
+            <label>Condition</label>
+            <select [(ngModel)]="filters.condition" (change)="applyFilters()">
+              <option value="">All Conditions</option>
+              <option *ngFor="let condition of conditions" [value]="condition">{{ condition }}</option>
+            </select>
+          </div>
+
+          <!-- Location -->
+          <div class="filter-group">
+            <label>Location</label>
+            <select [(ngModel)]="filters.location" (change)="applyFilters()">
+              <option value="">All Locations</option>
+              <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+            </select>
+          </div>
+
+          <!-- Mileage Range -->
+          <div class="filter-group">
+            <label>Mileage Range (km)</label>
+            <div class="range-inputs">
+              <input 
+                type="number" 
+                [(ngModel)]="filters.minMileage"
+                (input)="applyFilters()"
+                placeholder="Min Mileage"
+                class="range-input"
+              >
+              <span class="range-separator">to</span>
+              <input 
+                type="number" 
+                [(ngModel)]="filters.maxMileage"
+                (input)="applyFilters()"
+                placeholder="Max Mileage"
+                class="range-input"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Actions -->
+        <div class="filter-actions">
+          <button class="clear-filters-btn" (click)="clearFilters()">
+            Clear All Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section">
+      <!-- Results Header -->
+      <div class="results-header">
+        <div class="results-info">
+          <h2>{{ filteredVehicles.length }} Vehicles Found</h2>
+          <p *ngIf="selectedCategory !== 'all'">in {{ getCategoryLabel(selectedCategory) }}</p>
+        </div>
+        
+        <!-- Sort Options -->
+        <div class="sort-options">
+          <label>Sort by:</label>
+          <select [(ngModel)]="sortBy" (change)="onSortChange()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="year-new">Year: Newest First</option>
+            <option value="year-old">Year: Oldest First</option>
+            <option value="mileage-low">Mileage: Low to High</option>
+            <option value="mileage-high">Mileage: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Vehicle Grid -->
+      <div class="vehicles-grid" *ngIf="getPaginatedVehicles().length > 0">
+        <div 
+          *ngFor="let vehicle of getPaginatedVehicles()"
+          class="vehicle-card"
+        >
+          <div class="vehicle-image">
+            <img [src]="vehicle.image" [alt]="vehicle.title" loading="lazy">
+            <div class="vehicle-category">
+              <span class="category-icon">{{ getCategoryIcon(vehicle.category) }}</span>
+              <span class="category-label">{{ getCategoryLabel(vehicle.category) }}</span>
+            </div>
+            <div class="vehicle-views">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              {{ vehicle.views }}
+            </div>
+          </div>
+          
+          <div class="vehicle-content">
+            <div class="vehicle-header">
+              <h3 class="vehicle-title">{{ vehicle.title }}</h3>
+              <div class="vehicle-price">{{ formatPrice(vehicle.price) }}</div>
+            </div>
+            
+            <div class="vehicle-details">
+              <div class="detail-item">
+                <span class="detail-label">Year:</span>
+                <span class="detail-value">{{ vehicle.year }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Mileage:</span>
+                <span class="detail-value">{{ formatMileage(vehicle.mileage) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Fuel:</span>
+                <span class="detail-value">{{ vehicle.fuelType }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Transmission:</span>
+                <span class="detail-value">{{ vehicle.transmission }}</span>
+              </div>
+            </div>
+            
+            <div class="vehicle-location">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61 4.79 5.5 7.5 5.5C9.71 5.5 11.5 7.29 11.5 9.5C11.5 7.29 13.29 5.5 15.5 5.5C18.21 5.5 21 7.61 21 10Z" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              {{ vehicle.location }}
+            </div>
+            
+            <div class="vehicle-seller">
+              <div class="seller-info">
+                <span class="seller-name">{{ vehicle.seller.name }}</span>
+                <span class="seller-type">{{ vehicle.seller.type }}</span>
+              </div>
+              <div class="seller-rating">
+                <span class="rating-stars">★★★★★</span>
+                <span class="rating-value">{{ vehicle.seller.rating }}</span>
+              </div>
+            </div>
+            
+            <div class="vehicle-actions">
+              <button class="btn btn-primary">View Details</button>
+              <button class="btn btn-secondary">Contact Seller</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Results -->
+      <div class="no-results" *ngIf="filteredVehicles.length === 0">
+        <div class="no-results-content">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <h3>No vehicles found</h3>
+          <p>Try adjusting your search criteria or filters to find more vehicles.</p>
+          <button class="btn btn-primary" (click)="clearFilters()">Clear Filters</button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button 
+          class="pagination-btn"
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >
+          Previous
+        </button>
+        
+        <div class="pagination-numbers">
+          <button 
+            *ngFor="let page of getPageNumbers()"
+            class="pagination-number"
+            [class.active]="page === currentPage"
+            (click)="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+        </div>
+        
+        <button 
+          class="pagination-btn"
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
