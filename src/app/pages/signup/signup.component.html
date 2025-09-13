@@ -3,43 +3,169 @@
     <h1 class="auth-title">{{ title }}</h1>
     <p class="auth-subtitle">Create your account to get started with SA Vehicle Market.</p>
     
-    <form class="auth-form">
+    <form class="auth-form" (ngSubmit)="onSubmit(signupForm)" #signupForm="ngForm">
       <div class="form-row">
         <div class="form-group">
           <label for="firstName">First Name</label>
-          <input type="text" id="firstName" name="firstName" placeholder="First name" required>
+          <input 
+            type="text" 
+            id="firstName" 
+            name="firstName" 
+            [(ngModel)]="signupData.firstName"
+            (input)="onFirstNameChange()"
+            placeholder="First name" 
+            required
+            #firstNameInput="ngModel"
+            [class.error]="(firstNameInput.invalid && firstNameInput.touched) || validationErrors.firstName"
+          >
+          <div class="error-message" *ngIf="(firstNameInput.invalid && firstNameInput.touched) || validationErrors.firstName">
+            <span *ngIf="firstNameInput.errors?.['required'] && firstNameInput.touched">First name is required</span>
+            <span *ngIf="validationErrors.firstName">{{ validationErrors.firstName }}</span>
+          </div>
         </div>
         
         <div class="form-group">
           <label for="lastName">Last Name</label>
-          <input type="text" id="lastName" name="lastName" placeholder="Last name" required>
+          <input 
+            type="text" 
+            id="lastName" 
+            name="lastName" 
+            [(ngModel)]="signupData.lastName"
+            (input)="onLastNameChange()"
+            placeholder="Last name" 
+            required
+            #lastNameInput="ngModel"
+            [class.error]="(lastNameInput.invalid && lastNameInput.touched) || validationErrors.lastName"
+          >
+          <div class="error-message" *ngIf="(lastNameInput.invalid && lastNameInput.touched) || validationErrors.lastName">
+            <span *ngIf="lastNameInput.errors?.['required'] && lastNameInput.touched">Last name is required</span>
+            <span *ngIf="validationErrors.lastName">{{ validationErrors.lastName }}</span>
+          </div>
         </div>
       </div>
       
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="signupData.email"
+          (input)="onEmailChange()"
+          placeholder="Enter your email" 
+          required
+          email
+          #emailInput="ngModel"
+          [class.error]="(emailInput.invalid && emailInput.touched) || validationErrors.email"
+        >
+        <div class="error-message" *ngIf="(emailInput.invalid && emailInput.touched) || validationErrors.email">
+          <span *ngIf="emailInput.errors?.['required'] && emailInput.touched">Email is required</span>
+          <span *ngIf="emailInput.errors?.['email'] && emailInput.touched">Please enter a valid email</span>
+          <span *ngIf="validationErrors.email">{{ validationErrors.email }}</span>
+        </div>
       </div>
       
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Create a password" required>
+        <div class="input-wrapper">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password" 
+            name="password" 
+            [(ngModel)]="signupData.password"
+            (input)="onPasswordChange()"
+            placeholder="Create a password" 
+            required
+            minlength="8"
+            #passwordInput="ngModel"
+            [class.error]="(passwordInput.invalid && passwordInput.touched) || validationErrors.password"
+          >
+          <button type="button" class="password-toggle" (click)="togglePassword()">
+            <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A18.45 18.45 0 0 1 5.06 5.06L17.94 17.94Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A18.5 18.5 0 0 1 19.58 16.42L9.9 4.24Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="(passwordInput.invalid && passwordInput.touched) || validationErrors.password">
+          <span *ngIf="passwordInput.errors?.['required'] && passwordInput.touched">Password is required</span>
+          <span *ngIf="passwordInput.errors?.['minlength'] && passwordInput.touched">Password must be at least 8 characters</span>
+          <span *ngIf="validationErrors.password">{{ validationErrors.password }}</span>
+        </div>
       </div>
       
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+        <div class="input-wrapper">
+          <input 
+            [type]="showConfirmPassword ? 'text' : 'password'" 
+            id="confirmPassword" 
+            name="confirmPassword" 
+            [(ngModel)]="signupData.confirmPassword"
+            (input)="onConfirmPasswordChange()"
+            placeholder="Confirm your password" 
+            required
+            #confirmPasswordInput="ngModel"
+            [class.error]="(confirmPasswordInput.invalid && confirmPasswordInput.touched) || validationErrors.confirmPassword"
+          >
+          <button type="button" class="password-toggle" (click)="toggleConfirmPassword()">
+            <svg *ngIf="!showConfirmPassword" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg *ngIf="showConfirmPassword" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A18.45 18.45 0 0 1 5.06 5.06L17.94 17.94Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A18.5 18.5 0 0 1 19.58 16.42L9.9 4.24Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="(confirmPasswordInput.invalid && confirmPasswordInput.touched) || validationErrors.confirmPassword">
+          <span *ngIf="confirmPasswordInput.errors?.['required'] && confirmPasswordInput.touched">Please confirm your password</span>
+          <span *ngIf="validationErrors.confirmPassword">{{ validationErrors.confirmPassword }}</span>
+        </div>
+      </div>
+      
+      <!-- General error message -->
+      <div class="error-message general-error" *ngIf="validationErrors.general">
+        {{ validationErrors.general }}
       </div>
       
       <div class="form-options">
         <label class="checkbox-label">
-          <input type="checkbox" name="terms" required>
+          <input 
+            type="checkbox" 
+            name="terms" 
+            [(ngModel)]="signupData.terms"
+            (change)="onTermsChange()"
+            required
+            #termsInput="ngModel"
+            [class.error]="(termsInput.invalid && termsInput.touched) || validationErrors.terms"
+          >
           <span class="checkmark"></span>
           I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="terms-link">Privacy Policy</a>
         </label>
+        <div class="error-message" *ngIf="(termsInput.invalid && termsInput.touched) || validationErrors.terms">
+          <span *ngIf="termsInput.errors?.['required'] && termsInput.touched">You must agree to the terms</span>
+          <span *ngIf="validationErrors.terms">{{ validationErrors.terms }}</span>
+        </div>
       </div>
       
-      <button type="submit" class="auth-button">Create Account</button>
+      <button type="submit" class="auth-button" [disabled]="signupForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Create Account</span>
+        <span *ngIf="isLoading" class="loading-spinner">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity="0.3"/>
+            <path d="M12 2A10 10 0 0 1 22 12" stroke="currentColor" stroke-width="4"/>
+          </svg>
+          Creating Account...
+        </span>
+      </button>
     </form>
     
     <div class="auth-footer">

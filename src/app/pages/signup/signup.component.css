@@ -66,12 +66,61 @@
   font-family: var(--font-primary);
   font-size: var(--text-base);
   transition: border-color 0.3s ease;
+  width: 100%;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: #9ca3af;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: #6b7280;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: var(--text-sm);
+  font-family: var(--font-primary);
+  margin-top: 0.25rem;
+}
+
+.general-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  text-align: center;
+  font-weight: 500;
 }
 
 .form-options {
@@ -123,6 +172,30 @@
 .auth-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.auth-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.loading-spinner svg {
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .auth-footer {

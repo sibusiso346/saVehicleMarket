@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-signin',
@@ -24,14 +24,29 @@ export class SigninComponent implements OnInit {
   showPassword = false;
   isLoading = false;
   
+  // Validation state
+  validationErrors = {
+    email: '',
+    password: '',
+    general: ''
+  };
+  
   // Toggle password visibility
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
   
   // Handle form submission
-  onSubmit(): void {
+  onSubmit(form: NgForm): void {
     if (this.isLoading) return;
+    
+    // Clear previous validation errors
+    this.clearValidationErrors();
+    
+    // Validate form
+    if (!this.validateForm()) {
+      return;
+    }
     
     this.isLoading = true;
     
@@ -39,27 +54,36 @@ export class SigninComponent implements OnInit {
     setTimeout(() => {
       console.log('Login attempt:', this.loginData);
       
-      // Handle remember me (only in browser)
-      if (typeof localStorage !== 'undefined') {
-        if (this.loginData.rememberMe) {
-          localStorage.setItem('rememberedEmail', this.loginData.email);
-        } else {
-          localStorage.removeItem('rememberedEmail');
+      // Simulate different scenarios
+      const isSuccess = Math.random() > 0.3; // 70% success rate for demo
+      
+      if (isSuccess) {
+        // Handle remember me (only in browser)
+        if (typeof localStorage !== 'undefined') {
+          if (this.loginData.rememberMe) {
+            localStorage.setItem('rememberedEmail', this.loginData.email);
+          } else {
+            localStorage.removeItem('rememberedEmail');
+          }
         }
+        
+        // Show success message (in real app, redirect to dashboard)
+        this.showNotification('Login successful!', 'success');
+        
+        // Reset form
+        this.loginData = {
+          email: '',
+          password: '',
+          rememberMe: false
+        };
+        form.resetForm();
+      } else {
+        // Simulate login failure
+        this.validationErrors.general = 'Invalid email or password. Please try again.';
+        this.showNotification('Login failed. Please check your credentials.', 'error');
       }
       
-      // Reset form and loading state
       this.isLoading = false;
-      
-      // Show success message (in real app, redirect to dashboard)
-      this.showNotification('Login successful!', 'success');
-      
-      // Reset form
-      this.loginData = {
-        email: '',
-        password: '',
-        rememberMe: false
-      };
     }, 2000);
   }
   
@@ -121,6 +145,73 @@ export class SigninComponent implements OnInit {
         }
       }, 300);
     }, 4000);
+  }
+  
+  // Custom validation methods
+  validateForm(): boolean {
+    let isValid = true;
+    
+    // Validate email
+    if (!this.loginData.email.trim()) {
+      this.validationErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!this.isValidEmail(this.loginData.email)) {
+      this.validationErrors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+    
+    // Validate password
+    if (!this.loginData.password.trim()) {
+      this.validationErrors.password = 'Password is required';
+      isValid = false;
+    } else if (this.loginData.password.length < 6) {
+      this.validationErrors.password = 'Password must be at least 6 characters long';
+      isValid = false;
+    } else if (!this.isStrongPassword(this.loginData.password)) {
+      this.validationErrors.password = 'Password must contain at least one letter and one number';
+      isValid = false;
+    }
+    
+    return isValid;
+  }
+  
+  clearValidationErrors(): void {
+    this.validationErrors = {
+      email: '',
+      password: '',
+      general: ''
+    };
+  }
+  
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
+  isStrongPassword(password: string): boolean {
+    // At least one letter and one number
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    return hasLetter && hasNumber;
+  }
+  
+  // Real-time validation
+  onEmailChange(): void {
+    if (this.loginData.email.trim() && !this.isValidEmail(this.loginData.email)) {
+      this.validationErrors.email = 'Please enter a valid email address';
+    } else {
+      this.validationErrors.email = '';
+    }
+  }
+  
+  onPasswordChange(): void {
+    if (this.loginData.password.trim() && this.loginData.password.length < 6) {
+      this.validationErrors.password = 'Password must be at least 6 characters long';
+    } else if (this.loginData.password.trim() && !this.isStrongPassword(this.loginData.password)) {
+      this.validationErrors.password = 'Password must contain at least one letter and one number';
+    } else {
+      this.validationErrors.password = '';
+    }
   }
   
   // Load remembered email on component init

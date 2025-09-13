@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-forgot-password',
@@ -46,20 +46,14 @@ export class ForgotPasswordComponent implements OnInit {
   }
   
   // Handle email submission
-  onSubmitEmail(): void {
+  onSubmitEmail(form: NgForm): void {
     if (this.isLoading) return;
     
     // Reset errors
-    this.errors = { email: '', newPassword: '', confirmPassword: '', general: '' };
+    this.clearErrors();
     
     // Validate email
-    if (!this.resetData.email) {
-      this.errors.email = 'Email is required';
-      return;
-    }
-    
-    if (!this.isValidEmail(this.resetData.email)) {
-      this.errors.email = 'Please enter a valid email address';
+    if (!this.validateEmailStep()) {
       return;
     }
     
@@ -75,7 +69,7 @@ export class ForgotPasswordComponent implements OnInit {
   }
   
   // Handle password reset
-  onSubmitReset(): void {
+  onSubmitReset(form: NgForm): void {
     if (this.isLoading) return;
     
     // Reset errors
@@ -148,6 +142,93 @@ export class ForgotPasswordComponent implements OnInit {
   private isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+  
+  // Custom validation methods
+  validateEmailStep(): boolean {
+    let isValid = true;
+    
+    if (!this.resetData.email.trim()) {
+      this.errors.email = 'Email is required';
+      isValid = false;
+    } else if (!this.isValidEmail(this.resetData.email)) {
+      this.errors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+    
+    return isValid;
+  }
+  
+  validateResetStep(): boolean {
+    let isValid = true;
+    
+    // Validate new password
+    if (!this.resetData.newPassword.trim()) {
+      this.errors.newPassword = 'New password is required';
+      isValid = false;
+    } else if (this.resetData.newPassword.length < 8) {
+      this.errors.newPassword = 'Password must be at least 8 characters long';
+      isValid = false;
+    } else if (!this.isStrongPassword(this.resetData.newPassword)) {
+      this.errors.newPassword = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+      isValid = false;
+    }
+    
+    // Validate confirm password
+    if (!this.resetData.confirmPassword.trim()) {
+      this.errors.confirmPassword = 'Please confirm your password';
+      isValid = false;
+    } else if (this.resetData.newPassword !== this.resetData.confirmPassword) {
+      this.errors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    }
+    
+    return isValid;
+  }
+  
+  clearErrors(): void {
+    this.errors = { email: '', newPassword: '', confirmPassword: '', general: '' };
+  }
+  
+  
+  isStrongPassword(password: string): boolean {
+    // At least one uppercase, one lowercase, and one number
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    return hasUpperCase && hasLowerCase && hasNumber;
+  }
+  
+  // Real-time validation
+  onEmailChange(): void {
+    if (this.resetData.email.trim() && !this.isValidEmail(this.resetData.email)) {
+      this.errors.email = 'Please enter a valid email address';
+    } else {
+      this.errors.email = '';
+    }
+  }
+  
+  onNewPasswordChange(): void {
+    if (this.resetData.newPassword.trim() && this.resetData.newPassword.length < 8) {
+      this.errors.newPassword = 'Password must be at least 8 characters long';
+    } else if (this.resetData.newPassword.trim() && !this.isStrongPassword(this.resetData.newPassword)) {
+      this.errors.newPassword = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+    } else {
+      this.errors.newPassword = '';
+    }
+    
+    // Also check confirm password if it has a value
+    if (this.resetData.confirmPassword.trim()) {
+      this.onConfirmPasswordChange();
+    }
+  }
+  
+  onConfirmPasswordChange(): void {
+    if (this.resetData.confirmPassword.trim() && this.resetData.newPassword !== this.resetData.confirmPassword) {
+      this.errors.confirmPassword = 'Passwords do not match';
+    } else {
+      this.errors.confirmPassword = '';
+    }
   }
   
   // Show notification
