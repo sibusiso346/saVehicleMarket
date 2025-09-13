@@ -12,5 +12,6 @@ export const routes: Routes = [
   { path: 'browse-vehicles', loadComponent: () => import('./pages/browse-vehicles/browse-vehicles.component').then(m => m.BrowseVehiclesComponent) },
   { path: 'sell', loadComponent: () => import('./pages/sell/sell.component').then(m => m.SellComponent) },
   { path: 'payment', loadComponent: () => import('./pages/payment/payment.component').then(m => m.PaymentComponent) },
+  { path: 'admin', loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent) },
   { path: '**', redirectTo: '' }
 ];
