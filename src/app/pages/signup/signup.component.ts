@@ -77,18 +77,21 @@ import { RouterModule } from '@angular/router';
 }
 
 .auth-title {
-  font-size: 2rem;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
   text-align: center;
   margin-bottom: 0.5rem;
   color: #1f2937;
 }
 
 .auth-subtitle {
+  font-family: var(--font-primary);
   text-align: center;
   color: #6b7280;
   margin-bottom: 2rem;
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
 }
 
 .auth-form {
@@ -110,16 +113,18 @@ import { RouterModule } from '@angular/router';
 }
 
 .form-group label {
-  font-weight: 600;
+  font-family: var(--font-primary);
+  font-weight: var(--font-semibold);
   color: #374151;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .form-group input {
   padding: 0.75rem 1rem;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 1rem;
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
   transition: border-color 0.3s ease;
 }
 
@@ -166,8 +171,10 @@ import { RouterModule } from '@angular/router';
   border: none;
   padding: 0.875rem 1.5rem;
   border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
+  font-family: var(--font-primary);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-wide);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);

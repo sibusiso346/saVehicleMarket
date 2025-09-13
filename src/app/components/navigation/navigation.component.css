@@ -48,14 +48,18 @@
 }
 
 .logo-text {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-heading);
+  font-weight: var(--font-bold);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-wide);
 }
 
-/* Center Subscribe Button */
-.nav-center {
-  flex: 1;
+/* Right Section: Subscribe, Sign In, Sign Up */
+.nav-right {
+  flex: 0 0 auto;
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .subscribe-btn {
@@ -67,8 +71,10 @@
   color: white;
   border: none;
   border-radius: 50px;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: var(--font-primary);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
@@ -85,20 +91,14 @@
   height: 18px;
 }
 
-/* Auth Buttons */
-.nav-auth {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
 .auth-btn {
   padding: 0.75rem 1.25rem;
   border: none;
   border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-family: var(--font-primary);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
@@ -144,6 +144,7 @@
   cursor: pointer;
   padding: 0;
   gap: 4px;
+  transition: all 0.3s ease;
 }
 
 .hamburger-line {
@@ -177,7 +178,8 @@
   transform: translateY(-100%);
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 999;
 }
 
 .mobile-menu.active {
@@ -194,23 +196,32 @@
   align-items: center;
 }
 
+.mobile-buttons-row {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .mobile-subscribe-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
   border: none;
   border-radius: 50px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-  width: 100%;
+  flex: 1;
   justify-content: center;
-  max-width: 200px;
+  min-width: 120px;
+  max-width: 150px;
 }
 
 .mobile-subscribe-btn:hover {
@@ -219,15 +230,8 @@
   background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
 }
 
-.mobile-auth-buttons {
-  display: flex;
-  gap: 0.75rem;
-  width: 100%;
-  justify-content: center;
-}
-
 .mobile-auth-btn {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 1rem;
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -239,6 +243,7 @@
   align-items: center;
   justify-content: center;
   flex: 1;
+  min-width: 100px;
   max-width: 120px;
 }
 
@@ -267,17 +272,39 @@
 }
 
 /* Responsive Design */
+@media (min-width: 769px) {
+  .mobile-menu {
+    display: none !important;
+  }
+  
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .nav-container {
+    padding: 0 1.25rem;
+  }
+  
+  .subscribe-btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .auth-btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
 @media (max-width: 768px) {
   .nav-container {
     padding: 0 1rem;
     height: 60px;
   }
 
-  .nav-center {
-    display: none;
-  }
-
-  .nav-auth {
+  .nav-right {
     display: none;
   }
 
@@ -293,20 +320,125 @@
     width: 28px;
     height: 28px;
   }
+  
+  .mobile-menu {
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav-container {
+    padding: 0 0.75rem;
+  }
+  
+  .logo-text {
+    font-size: 1rem;
+  }
+  
+  .logo-icon {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .mobile-menu-content {
+    padding: 1.25rem;
+  }
+  
+  .mobile-buttons-row {
+    gap: 0.5rem;
+  }
+  
+  .mobile-subscribe-btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+    min-width: 100px;
+    max-width: 130px;
+  }
+  
+  .mobile-auth-btn {
+    padding: 0.65rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 80px;
+    max-width: 100px;
+  }
 }
 
 @media (max-width: 480px) {
   .nav-container {
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
+    height: 55px;
   }
 
   .logo-text {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .logo-icon {
     width: 24px;
     height: 24px;
+  }
+  
+  .mobile-menu-content {
+    padding: 1rem;
+  }
+  
+  .mobile-buttons-row {
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  
+  .mobile-subscribe-btn {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 90px;
+    max-width: 120px;
+  }
+  
+  .mobile-auth-btn {
+    padding: 0.55rem 0.7rem;
+    font-size: 0.75rem;
+    min-width: 70px;
+    max-width: 90px;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav-container {
+    padding: 0 0.25rem;
+  }
+  
+  .logo-text {
+    font-size: 0.9rem;
+  }
+  
+  .logo-icon {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .mobile-menu-content {
+    padding: 0.75rem;
+  }
+  
+  .mobile-buttons-row {
+    gap: 0.3rem;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .mobile-subscribe-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .mobile-auth-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
+    width: 100%;
+    max-width: 200px;
   }
 }
 
