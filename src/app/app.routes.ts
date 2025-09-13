@@ -11,5 +11,6 @@ export const routes: Routes = [
   { path: 'privacy-policy', loadComponent: () => import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent) },
   { path: 'browse-vehicles', loadComponent: () => import('./pages/browse-vehicles/browse-vehicles.component').then(m => m.BrowseVehiclesComponent) },
   { path: 'sell', loadComponent: () => import('./pages/sell/sell.component').then(m => m.SellComponent) },
+  { path: 'payment', loadComponent: () => import('./pages/payment/payment.component').then(m => m.PaymentComponent) },
   { path: '**', redirectTo: '' }
 ];

@@ -1,0 +1,518 @@
+<div class="payment-container">
+  <div class="container">
+    <!-- Header Section -->
+    <div class="payment-header">
+      <h1 class="payment-title">Secure Payment</h1>
+      <p class="payment-subtitle">Complete your purchase with confidence</p>
+      
+      <!-- Security Badge -->
+      <div class="security-badge" *ngIf="isSecureConnection">
+        <svg class="security-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Secure SSL Connection</span>
+      </div>
+    </div>
+
+    <!-- Payment Summary -->
+    <div class="payment-summary">
+      <h2>Payment Summary</h2>
+      <div class="summary-details">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>{{ formatPrice(paymentSummary.subtotal) }}</span>
+        </div>
+        <div class="summary-row">
+          <span>VAT (15%)</span>
+          <span>{{ formatPrice(paymentSummary.vat) }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Service Fee</span>
+          <span>{{ formatPrice(paymentSummary.serviceFee) }}</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>{{ formatPrice(paymentSummary.total) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-section">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="(currentStep / totalSteps) * 100"></div>
+      </div>
+      <div class="progress-steps">
+        <div 
+          *ngFor="let step of [1,2,3]; let i = index"
+          class="progress-step"
+          [class.active]="currentStep === step"
+          [class.completed]="currentStep > step"
+          (click)="goToStep(step)"
+        >
+          <div class="step-number">{{ step }}</div>
+          <div class="step-label">{{ getStepTitle(step) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" *ngIf="isCompleted">
+      <div class="success-content">
+        <svg class="success-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>Payment Successful!</h2>
+        <p>Your payment has been processed successfully. You will receive a confirmation email shortly.</p>
+        <div class="success-actions">
+          <button class="btn btn-primary" routerLink="/">Return to Home</button>
+          <button class="btn btn-secondary" (click)="resetPayment()">Make Another Payment</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Form -->
+    <div class="payment-form-section" *ngIf="!isCompleted">
+      <form class="payment-form" (ngSubmit)="processPayment(paymentForm)" #paymentForm="ngForm">
+        
+        <!-- Step 1: Payment Method Selection -->
+        <div class="form-step" *ngIf="currentStep === 1">
+          <div class="step-header">
+            <h2>{{ getStepTitle(1) }}</h2>
+            <p>{{ getStepDescription(1) }}</p>
+          </div>
+
+          <div class="error-message" *ngIf="validationErrors['paymentMethod']">
+            {{ validationErrors['paymentMethod'] }}
+          </div>
+
+          <div class="payment-methods">
+            <div 
+              *ngFor="let method of paymentMethods"
+              class="payment-method"
+              [class.selected]="isPaymentMethodSelected(method.id)"
+              [class.unavailable]="!method.available"
+              (click)="selectPaymentMethod(method.id)"
+            >
+              <div class="method-icon">
+                <span class="icon-emoji">{{ getPaymentMethodIcon(method.id) }}</span>
+              </div>
+              <div class="method-details">
+                <h3>{{ method.name }}</h3>
+                <p>{{ method.description }}</p>
+              </div>
+              <div class="method-status">
+                <span class="unavailable-badge" *ngIf="!method.available">Coming Soon</span>
+                <div class="radio-indicator" *ngIf="method.available">
+                  <div class="radio-dot" [class.selected]="isPaymentMethodSelected(method.id)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Payment Details -->
+        <div class="form-step" *ngIf="currentStep === 2">
+          <div class="step-header">
+            <h2>{{ getStepTitle(2) }}</h2>
+            <p>{{ getStepDescription(2) }}</p>
+          </div>
+
+          <!-- Credit Card Form -->
+          <div class="credit-card-form" *ngIf="paymentDetails.paymentMethod === 'credit-card'">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="cardNumber">Card Number *</label>
+                <input 
+                  type="text" 
+                  id="cardNumber"
+                  name="cardNumber"
+                  [(ngModel)]="paymentDetails.cardNumber"
+                  (input)="formatCardNumber($event)"
+                  placeholder="1234 5678 9012 3456"
+                  class="form-input"
+                  [class.error]="validationErrors['cardNumber']"
+                  maxlength="19"
+                  required
+                >
+                <div class="error-message" *ngIf="validationErrors['cardNumber']">
+                  {{ validationErrors['cardNumber'] }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="expiryMonth">Expiry Month *</label>
+                <select 
+                  id="expiryMonth"
+                  name="expiryMonth"
+                  [(ngModel)]="paymentDetails.expiryMonth"
+                  class="form-select"
+                  [class.error]="validationErrors['expiryMonth']"
+                  required
+                >
+                  <option value="">Select Month</option>
+                  <option *ngFor="let month of months" [value]="month.value">
+                    {{ month.label }}
+                  </option>
+                </select>
+                <div class="error-message" *ngIf="validationErrors['expiryMonth']">
+                  {{ validationErrors['expiryMonth'] }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="expiryYear">Expiry Year *</label>
+                <select 
+                  id="expiryYear"
+                  name="expiryYear"
+                  [(ngModel)]="paymentDetails.expiryYear"
+                  class="form-select"
+                  [class.error]="validationErrors['expiryYear']"
+                  required
+                >
+                  <option value="">Select Year</option>
+                  <option *ngFor="let year of years" [value]="year">
+                    {{ year }}
+                  </option>
+                </select>
+                <div class="error-message" *ngIf="validationErrors['expiryYear']">
+                  {{ validationErrors['expiryYear'] }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="cvv">CVV *</label>
+                <div class="cvv-input-group">
+                  <input 
+                    [type]="showCvv ? 'text' : 'password'"
+                    id="cvv"
+                    name="cvv"
+                    [(ngModel)]="paymentDetails.cvv"
+                    placeholder="123"
+                    class="form-input"
+                    [class.error]="validationErrors['cvv']"
+                    maxlength="4"
+                    required
+                  >
+                  <button 
+                    type="button"
+                    class="cvv-toggle"
+                    (click)="toggleCvvVisibility()"
+                    [title]="showCvv ? 'Hide CVV' : 'Show CVV'"
+                  >
+                    <svg *ngIf="!showCvv" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <svg *ngIf="showCvv" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="2"/>
+                      <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="error-message" *ngIf="validationErrors['cvv']">
+                  {{ validationErrors['cvv'] }}
+                </div>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="cardholderName">Cardholder Name *</label>
+                <input 
+                  type="text" 
+                  id="cardholderName"
+                  name="cardholderName"
+                  [(ngModel)]="paymentDetails.cardholderName"
+                  placeholder="John Doe"
+                  class="form-input"
+                  [class.error]="validationErrors['cardholderName']"
+                  required
+                >
+                <div class="error-message" *ngIf="validationErrors['cardholderName']">
+                  {{ validationErrors['cardholderName'] }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bank Transfer Form -->
+          <div class="bank-transfer-form" *ngIf="paymentDetails.paymentMethod === 'bank-transfer'">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="bankName">Bank Name *</label>
+                <input 
+                  type="text" 
+                  id="bankName"
+                  name="bankName"
+                  [(ngModel)]="paymentDetails.bankName"
+                  placeholder="e.g., Standard Bank"
+                  class="form-input"
+                  [class.error]="validationErrors['bankName']"
+                  required
+                >
+                <div class="error-message" *ngIf="validationErrors['bankName']">
+                  {{ validationErrors['bankName'] }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="accountNumber">Account Number *</label>
+                <input 
+                  type="text" 
+                  id="accountNumber"
+                  name="accountNumber"
+                  [(ngModel)]="paymentDetails.accountNumber"
+                  placeholder="1234567890"
+                  class="form-input"
+                  [class.error]="validationErrors['accountNumber']"
+                  required
+                >
+                <div class="error-message" *ngIf="validationErrors['accountNumber']">
+                  {{ validationErrors['accountNumber'] }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="branchCode">Branch Code *</label>
+                <input 
+                  type="text" 
+                  id="branchCode"
+                  name="branchCode"
+                  [(ngModel)]="paymentDetails.branchCode"
+                  placeholder="051001"
+                  class="form-input"
+                  [class.error]="validationErrors['branchCode']"
+                  required
+                >
+                <div class="error-message" *ngIf="validationErrors['branchCode']">
+                  {{ validationErrors['branchCode'] }}
+                </div>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="accountHolderName">Account Holder Name *</label>
+                <input 
+                  type="text" 
+                  id="accountHolderName"
+                  name="accountHolderName"
+                  [(ngModel)]="paymentDetails.accountHolderName"
+                  placeholder="John Doe"
+                  class="form-input"
+                  [class.error]="validationErrors['accountHolderName']"
+                  required
+                >
+                <div class="error-message" *ngIf="validationErrors['accountHolderName']">
+                  {{ validationErrors['accountHolderName'] }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EFT Form -->
+          <div class="eft-form" *ngIf="paymentDetails.paymentMethod === 'eft'">
+            <div class="form-group">
+              <label for="referenceNumber">Reference Number *</label>
+              <input 
+                type="text" 
+                id="referenceNumber"
+                name="referenceNumber"
+                [(ngModel)]="paymentDetails.referenceNumber"
+                placeholder="Enter your EFT reference number"
+                class="form-input"
+                [class.error]="validationErrors['referenceNumber']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['referenceNumber']">
+                {{ validationErrors['referenceNumber'] }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Billing & Confirmation -->
+        <div class="form-step" *ngIf="currentStep === 3">
+          <div class="step-header">
+            <h2>{{ getStepTitle(3) }}</h2>
+            <p>{{ getStepDescription(3) }}</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input 
+                type="email" 
+                id="email"
+                name="email"
+                [(ngModel)]="paymentDetails.email"
+                placeholder="your.email@example.com"
+                class="form-input"
+                [class.error]="validationErrors['email']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['email']">
+                {{ validationErrors['email'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number *</label>
+              <input 
+                type="tel" 
+                id="phone"
+                name="phone"
+                [(ngModel)]="paymentDetails.phone"
+                placeholder="+27 11 123 4567"
+                class="form-input"
+                [class.error]="validationErrors['phone']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['phone']">
+                {{ validationErrors['phone'] }}
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="street">Street Address *</label>
+              <input 
+                type="text" 
+                id="street"
+                name="street"
+                [(ngModel)]="paymentDetails.billingAddress.street"
+                placeholder="123 Main Street"
+                class="form-input"
+                [class.error]="validationErrors['street']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['street']">
+                {{ validationErrors['street'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="city">City *</label>
+              <input 
+                type="text" 
+                id="city"
+                name="city"
+                [(ngModel)]="paymentDetails.billingAddress.city"
+                placeholder="Johannesburg"
+                class="form-input"
+                [class.error]="validationErrors['city']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['city']">
+                {{ validationErrors['city'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="postalCode">Postal Code *</label>
+              <input 
+                type="text" 
+                id="postalCode"
+                name="postalCode"
+                [(ngModel)]="paymentDetails.billingAddress.postalCode"
+                placeholder="2000"
+                class="form-input"
+                [class.error]="validationErrors['postalCode']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['postalCode']">
+                {{ validationErrors['postalCode'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="country">Country *</label>
+              <select 
+                id="country"
+                name="country"
+                [(ngModel)]="paymentDetails.billingAddress.country"
+                class="form-select"
+                required
+              >
+                <option *ngFor="let country of countries" [value]="country">
+                  {{ country }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="terms-section">
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox"
+                  [(ngModel)]="paymentDetails.acceptTerms"
+                  name="acceptTerms"
+                  [class.error]="validationErrors['acceptTerms']"
+                  required
+                >
+                <span class="checkmark"></span>
+                I agree to the <a href="/terms-of-service" target="_blank">Terms of Service</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a> *
+              </label>
+              <div class="error-message" *ngIf="validationErrors['acceptTerms']">
+                {{ validationErrors['acceptTerms'] }}
+              </div>
+            </div>
+
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox"
+                  [(ngModel)]="paymentDetails.acceptMarketing"
+                  name="acceptMarketing"
+                >
+                <span class="checkmark"></span>
+                I would like to receive marketing communications and updates
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="form-navigation">
+          <button 
+            type="button"
+            class="btn btn-secondary"
+            (click)="previousStep()"
+            *ngIf="currentStep > 1"
+          >
+            Previous
+          </button>
+          
+          <div class="nav-spacer"></div>
+          
+          <button 
+            type="button"
+            class="btn btn-primary"
+            (click)="nextStep()"
+            *ngIf="currentStep < totalSteps"
+          >
+            Next
+          </button>
+          
+          <button 
+            type="submit"
+            class="btn btn-primary"
+            *ngIf="currentStep === totalSteps"
+            [disabled]="isProcessing"
+          >
+            <span *ngIf="!isProcessing">Complete Payment</span>
+            <span *ngIf="isProcessing" class="loading-spinner">
+              <svg class="spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+                  <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
+                  <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+                </circle>
+              </svg>
+              Processing...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
