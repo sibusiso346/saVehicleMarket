@@ -222,6 +222,8 @@
         <div 
           *ngFor="let vehicle of getPaginatedVehicles()"
           class="vehicle-card"
+          [routerLink]="['/vehicle', vehicle.id]"
+          style="cursor: pointer;"
         >
           <div class="vehicle-image">
             <img [src]="vehicle.image" [alt]="vehicle.title" loading="lazy">
@@ -283,8 +285,8 @@
             </div>
             
             <div class="vehicle-actions">
-              <button class="btn btn-primary">View Details</button>
-              <button class="btn btn-secondary">Contact Seller</button>
+              <button class="btn btn-primary" [routerLink]="['/vehicle', vehicle.id]" (click)="$event.stopPropagation()">View Details</button>
+              <button class="btn btn-secondary" (click)="$event.stopPropagation()">Contact Seller</button>
             </div>
           </div>
         </div>

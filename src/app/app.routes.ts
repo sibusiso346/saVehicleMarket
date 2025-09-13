@@ -10,6 +10,7 @@ export const routes: Routes = [
   { path: 'terms-of-service', loadComponent: () => import('./pages/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent) },
   { path: 'privacy-policy', loadComponent: () => import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent) },
   { path: 'browse-vehicles', loadComponent: () => import('./pages/browse-vehicles/browse-vehicles.component').then(m => m.BrowseVehiclesComponent) },
+  { path: 'vehicle/:id', loadComponent: () => import('./pages/vehicle-detail/vehicle-detail.component').then(m => m.VehicleDetailComponent) },
   { path: 'sell', loadComponent: () => import('./pages/sell/sell.component').then(m => m.SellComponent) },
   { path: 'payment', loadComponent: () => import('./pages/payment/payment.component').then(m => m.PaymentComponent) },
   { path: 'admin', loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent) },

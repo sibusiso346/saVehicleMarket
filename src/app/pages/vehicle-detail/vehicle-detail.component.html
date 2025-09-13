@@ -1,0 +1,245 @@
+<div class="vehicle-detail-container" *ngIf="vehicle">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a routerLink="/browse-vehicles" class="breadcrumb-link">Browse Vehicles</a>
+      <span class="breadcrumb-separator">›</span>
+      <span class="breadcrumb-current">{{ vehicle.brand }} {{ vehicle.model }}</span>
+    </nav>
+
+    <!-- Vehicle Header -->
+    <div class="vehicle-header">
+      <div class="vehicle-title-section">
+        <div class="vehicle-category">
+          <span class="category-icon">{{ getCategoryIcon(vehicle.category) }}</span>
+          <span class="category-label">{{ getCategoryLabel(vehicle.category) }}</span>
+        </div>
+        <h1 class="vehicle-title">{{ vehicle.title }}</h1>
+        <div class="vehicle-meta">
+          <span class="vehicle-location">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61 4.79 5.5 7.5 5.5C9.71 5.5 11.5 7.29 11.5 9.5C11.5 7.29 13.29 5.5 15.5 5.5C18.21 5.5 21 7.61 21 10Z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            {{ vehicle.location }}
+          </span>
+          <span class="vehicle-posted">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Posted {{ getDaysPosted(vehicle.postedDate) }} days ago
+          </span>
+          <span class="vehicle-views">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            {{ vehicle.views }} views
+          </span>
+        </div>
+      </div>
+      
+      <div class="vehicle-price-section">
+        <div class="vehicle-price">{{ formatPrice(vehicle.price) }}</div>
+        <button class="btn btn-primary contact-btn" (click)="toggleContactForm()">
+          Contact Seller
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="vehicle-content">
+      <!-- Image Gallery -->
+      <div class="image-gallery">
+        <div class="main-image">
+          <img [src]="vehicle.image" [alt]="vehicle.title" loading="lazy">
+        </div>
+        <!-- Vehicle Gallery Thumbnails -->
+        <div class="gallery-thumbnails">
+          <div class="thumbnail-grid">
+            <div class="thumbnail-item" *ngFor="let galleryImage of vehicle.gallery; let i = index" (click)="openImageModal(galleryImage, i)">
+              <img [src]="galleryImage" [alt]="vehicle.title + ' view ' + (i + 1)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Details -->
+      <div class="vehicle-details">
+        <!-- Key Specifications -->
+        <div class="specifications-section">
+          <h2>Key Specifications</h2>
+          <div class="specifications-grid">
+            <div class="spec-item">
+              <div class="spec-label">Brand</div>
+              <div class="spec-value">{{ vehicle.brand }}</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-label">Model</div>
+              <div class="spec-value">{{ vehicle.model }}</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-label">Year</div>
+              <div class="spec-value">{{ vehicle.year }}</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-label">Mileage</div>
+              <div class="spec-value">{{ formatMileage(vehicle.mileage) }}</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-label">Fuel Type</div>
+              <div class="spec-value">{{ vehicle.fuelType }}</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-label">Transmission</div>
+              <div class="spec-value">{{ vehicle.transmission }}</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-label">Condition</div>
+              <div class="spec-value">{{ vehicle.condition }}</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-label">Location</div>
+              <div class="spec-value">{{ vehicle.location }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="description-section">
+          <h2>Description</h2>
+          <p class="description-text">{{ vehicle.description }}</p>
+        </div>
+
+        <!-- Features -->
+        <div class="features-section">
+          <h2>Features & Equipment</h2>
+          <div class="features-grid">
+            <div class="feature-item" *ngFor="let feature of vehicle.features">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              {{ feature }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Seller Information -->
+        <div class="seller-section">
+          <h2>Seller Information</h2>
+          <div class="seller-card">
+            <div class="seller-info">
+              <div class="seller-name">{{ vehicle.seller.name }}</div>
+              <div class="seller-type">{{ vehicle.seller.type | titlecase }} Seller</div>
+              <div class="seller-rating">
+                <span class="rating-stars">{{ generateStars(vehicle.seller.rating) }}</span>
+                <span class="rating-value">{{ vehicle.seller.rating }}/5</span>
+              </div>
+            </div>
+            <div class="seller-actions">
+              <button class="btn btn-primary" (click)="toggleContactForm()">
+                Contact Seller
+              </button>
+              <button class="btn btn-secondary">
+                View Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form Modal -->
+    <div class="contact-modal" *ngIf="showContactForm">
+      <div class="modal-backdrop" (click)="toggleContactForm()"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Contact {{ vehicle.seller.name }}</h3>
+          <button class="modal-close" (click)="toggleContactForm()">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+              <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form class="contact-form">
+            <div class="form-group">
+              <label for="name">Your Name</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="4" placeholder="Hi, I'm interested in this vehicle. Could you please provide more information?"></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" (click)="toggleContactForm()">Cancel</button>
+              <button type="submit" class="btn btn-primary">Send Message</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn btn-secondary back-btn" (click)="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="15,18 9,12 15,6" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Back to Browse
+      </button>
+      <button class="btn btn-primary" (click)="toggleContactForm()">
+        Contact Seller
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Vehicle Not Found -->
+<div class="vehicle-not-found" *ngIf="!vehicle">
+  <div class="container">
+    <div class="not-found-content">
+      <h1>Vehicle Not Found</h1>
+      <p>The vehicle you're looking for doesn't exist or has been removed.</p>
+      <button class="btn btn-primary" (click)="goBack()">Back to Browse Vehicles</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image Zoom Modal -->
+<div class="image-modal" *ngIf="showImageModal" (click)="closeImageModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="closeImageModal()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <button class="nav-button prev" (click)="previousImage()" *ngIf="currentImageIndex > 0">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15,18 9,12 15,6"></polyline>
+      </svg>
+    </button>
+    <button class="nav-button next" (click)="nextImage()" *ngIf="vehicle && currentImageIndex < vehicle.gallery.length - 1">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9,18 15,12 9,6"></polyline>
+      </svg>
+    </button>
+    <div class="modal-image-container">
+      <img [src]="currentModalImage" [alt]="vehicle?.title + ' view ' + (currentImageIndex + 1)" class="modal-image">
+    </div>
+    <div class="image-counter">
+      {{ currentImageIndex + 1 }} / {{ vehicle?.gallery?.length || 0 }}
+    </div>
+  </div>
+</div>

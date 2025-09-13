@@ -18,7 +18,7 @@
           <div class="recent-cars-section" id="recent-cars">
             <h2 class="section-title">Recently Added Cars</h2>
       <div class="cars-grid">
-        <div class="car-card" *ngFor="let car of recentCars">
+        <div class="car-card" *ngFor="let car of recentCars" [routerLink]="['/vehicle', car.id]" style="cursor: pointer;">
           <div class="car-image">
             <img [src]="car.image" [alt]="car.make + ' ' + car.model" loading="lazy">
             <div class="car-badge">{{ car.year }}</div>
@@ -49,7 +49,7 @@
               <span class="price-amount">R{{ car.price | number }}</span>
               <span class="price-period">/month</span>
             </div>
-            <button class="view-details-btn">View Details</button>
+            <button class="view-details-btn" [routerLink]="['/vehicle', car.id]" (click)="$event.stopPropagation()">View Details</button>
           </div>
         </div>
       </div>
@@ -58,7 +58,7 @@
           <div class="excellent-condition-section" id="excellent-condition">
             <h2 class="section-title">Excellent Condition Vehicles</h2>
       <div class="cars-grid">
-        <div class="car-card" *ngFor="let car of excellentConditionCars">
+        <div class="car-card" *ngFor="let car of excellentConditionCars" [routerLink]="['/vehicle', car.id]" style="cursor: pointer;">
           <div class="car-image">
             <img [src]="car.image" [alt]="car.make + ' ' + car.model" loading="lazy">
             <div class="car-badge excellent-badge">{{ car.condition }}</div>
@@ -89,7 +89,7 @@
               <span class="price-amount">R{{ car.price | number }}</span>
               <span class="price-period">/month</span>
             </div>
-            <button class="view-details-btn">View Details</button>
+            <button class="view-details-btn" [routerLink]="['/vehicle', car.id]" (click)="$event.stopPropagation()">View Details</button>
           </div>
         </div>
       </div>
@@ -98,7 +98,7 @@
           <div class="leisure-vehicles-section" id="leisure-vehicles">
             <h2 class="section-title">Leisure Vehicles</h2>
       <div class="leisure-grid">
-        <div class="leisure-card" *ngFor="let vehicle of leisureVehicles">
+        <div class="leisure-card" *ngFor="let vehicle of leisureVehicles" [routerLink]="['/vehicle', vehicle.id]" style="cursor: pointer;">
           <div class="vehicle-image">
             <img [src]="vehicle.image" [alt]="vehicle.make + ' ' + vehicle.model" loading="lazy">
             <div class="vehicle-badge leisure-badge">{{ vehicle.type }}</div>
@@ -129,7 +129,7 @@
               <span class="price-amount">R{{ vehicle.price | number }}</span>
               <span class="price-period">/month</span>
             </div>
-            <button class="view-details-btn">View Details</button>
+            <button class="view-details-btn" [routerLink]="['/vehicle', vehicle.id]" (click)="$event.stopPropagation()">View Details</button>
           </div>
         </div>
       </div>
