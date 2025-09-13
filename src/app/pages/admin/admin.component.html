@@ -66,6 +66,18 @@
         </svg>
         All Listings
       </button>
+      <button 
+        class="nav-tab"
+        [class.active]="showPaymentRequests"
+        (click)="togglePaymentRequests()"
+      >
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+          <line x1="1" y1="10" x2="23" y2="10" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Payment Requests
+        <span class="tab-badge" *ngIf="paymentRequests.length > 0">{{ paymentRequests.length }}</span>
+      </button>
     </div>
 
     <!-- Dashboard View -->
@@ -415,6 +427,196 @@
         <button class="btn btn-success" (click)="approveVehicle()">
           Approve
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Requests View -->
+<div class="payment-requests-view" *ngIf="showPaymentRequests">
+  <div class="payment-header">
+    <h2>Payment Requests</h2>
+    <p>Manage payments for approved vehicle listings</p>
+  </div>
+
+  <!-- Payment Filters -->
+  <div class="payment-filters">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="paymentStatusFilter">Filter by Status:</label>
+        <select 
+          id="paymentStatusFilter"
+          class="filter-select"
+          [value]="paymentStatusFilter"
+          (change)="onPaymentStatusFilterChange($event)"
+        >
+          <option value="all">All Statuses</option>
+          <option value="pending">⏳ Pending</option>
+          <option value="processing">🔄 Processing</option>
+          <option value="completed">✅ Completed</option>
+          <option value="failed">❌ Failed</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="paymentSearch">Search:</label>
+        <input 
+          type="text"
+          id="paymentSearch"
+          class="filter-input"
+          placeholder="Search by vehicle, seller, email, or transaction ID..."
+          [value]="paymentSearchQuery"
+          (input)="onPaymentSearchChange($event)"
+        >
+      </div>
+      
+      <div class="filter-actions">
+        <button 
+          class="btn btn-secondary btn-sm"
+          (click)="clearPaymentFilters()"
+          [disabled]="paymentStatusFilter === 'all' && !paymentSearchQuery"
+        >
+          Clear Filters
+        </button>
+      </div>
+    </div>
+    
+    <div class="filter-results">
+      <span class="results-count">
+        Showing {{ filteredPaymentRequests.length }} of {{ paymentRequests.length }} payment requests
+      </span>
+    </div>
+  </div>
+
+  <div class="payment-stats">
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ pendingPayments }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔄</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ processingPayments }}</div>
+        <div class="stat-label">Processing</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ completedPayments }}</div>
+        <div class="stat-label">Completed</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <div class="stat-value">R{{ totalPaidAmount | number:'1.0-0' }}</div>
+        <div class="stat-label">Total Paid</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-table-container">
+    <table class="payment-table">
+      <thead>
+        <tr>
+          <th>Vehicle</th>
+          <th>Seller</th>
+          <th>Amount</th>
+          <th>Approved Date</th>
+          <th>Payment Status</th>
+          <th>Payment Method</th>
+          <th>Transaction ID</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of filteredPaymentRequests" class="payment-row">
+          <td class="vehicle-info">
+            <div class="vehicle-title">{{ request.vehicleTitle }}</div>
+          </td>
+          <td class="seller-info">
+            <div class="seller-name">{{ request.sellerName }}</div>
+            <div class="seller-contact">{{ request.sellerEmail }}</div>
+            <div class="seller-contact">{{ request.sellerPhone }}</div>
+          </td>
+          <td class="amount">
+            <div class="price">R{{ request.price | number:'1.0-0' }}</div>
+          </td>
+          <td class="approved-date">
+            {{ request.approvedDate | date:'short' }}
+          </td>
+          <td class="payment-status">
+            <select 
+              class="status-select"
+              [class]="getPaymentStatusClass(request.paymentStatus)"
+              [value]="request.paymentStatus"
+              (change)="updatePaymentStatus(request.id, $event)"
+            >
+              <option value="pending">⏳ Pending</option>
+              <option value="processing">🔄 Processing</option>
+              <option value="completed">✅ Completed</option>
+              <option value="failed">❌ Failed</option>
+            </select>
+          </td>
+          <td class="payment-method">
+            <select 
+              class="method-select"
+              [value]="request.paymentMethod"
+              (change)="updatePaymentMethod(request.id, $event)"
+            >
+              <option value="">Select Method</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="EFT">EFT</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Cash">Cash</option>
+              <option value="Other">Other</option>
+            </select>
+          </td>
+          <td class="transaction-id">
+            <input 
+              type="text"
+              class="transaction-input"
+              [value]="request.transactionId"
+              (input)="updateTransactionId(request.id, $event)"
+              placeholder="Enter transaction ID"
+            >
+          </td>
+          <td class="actions">
+            <button 
+              class="btn btn-success btn-sm"
+              (click)="markPaymentComplete(request.id)"
+              [disabled]="request.paymentStatus === 'completed'"
+            >
+              Complete
+            </button>
+            <button 
+              class="btn btn-primary btn-sm"
+              (click)="openReviewModal(getVehicleById(request.id))"
+            >
+              View Details
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="payment-notes" *ngIf="filteredPaymentRequests.length > 0">
+    <h3>Payment Notes</h3>
+    <div class="notes-grid">
+      <div *ngFor="let request of filteredPaymentRequests" class="note-item">
+        <label>{{ request.vehicleTitle }} - Notes:</label>
+        <textarea 
+          class="notes-textarea"
+          [value]="request.notes"
+          (input)="updatePaymentNotes(request.id, $event)"
+          placeholder="Add payment notes..."
+          rows="2"
+        ></textarea>
       </div>
     </div>
   </div>

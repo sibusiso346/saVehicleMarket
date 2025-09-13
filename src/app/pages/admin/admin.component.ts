@@ -77,6 +77,30 @@ export class AdminComponent implements OnInit {
   // Math reference for template
   Math = Math;
   
+  // Payment request management
+  showPaymentRequests = false;
+  paymentRequests: any[] = [];
+  filteredPaymentRequests: any[] = [];
+  paymentStatusFilter = 'all';
+  paymentSearchQuery = '';
+  
+  // Computed properties for payment stats
+  get pendingPayments(): number {
+    return this.paymentRequests.filter(r => r.paymentStatus === 'pending').length;
+  }
+  
+  get processingPayments(): number {
+    return this.paymentRequests.filter(r => r.paymentStatus === 'processing').length;
+  }
+  
+  get completedPayments(): number {
+    return this.paymentRequests.filter(r => r.paymentStatus === 'completed').length;
+  }
+  
+  get totalPaidAmount(): number {
+    return this.paymentRequests.reduce((sum, r) => sum + (r.paymentStatus === 'completed' ? r.price : 0), 0);
+  }
+  
   // Filter and search
   searchQuery = '';
   statusFilter = 'all';
@@ -827,5 +851,145 @@ export class AdminComponent implements OnInit {
           break;
       }
     }
+  }
+
+  // Payment request methods
+  togglePaymentRequests(): void {
+    this.showPaymentRequests = !this.showPaymentRequests;
+    if (this.showPaymentRequests) {
+      this.loadPaymentRequests();
+    }
+  }
+
+  loadPaymentRequests(): void {
+    // Filter approved vehicles and create payment requests
+    this.paymentRequests = this.vehicleListings
+      .filter(vehicle => vehicle.status === 'approved')
+      .map(vehicle => ({
+        id: vehicle.id,
+        vehicleTitle: vehicle.title,
+        sellerName: vehicle.seller.name,
+        sellerEmail: vehicle.seller.email,
+        sellerPhone: vehicle.seller.phone,
+        price: vehicle.price,
+        approvedDate: vehicle.reviewedDate || new Date(),
+        paymentStatus: 'pending',
+        paymentMethod: '',
+        transactionId: '',
+        notes: ''
+      }));
+    
+    // Initialize filtered requests
+    this.applyPaymentFilters();
+  }
+
+  applyPaymentFilters(): void {
+    let filtered = [...this.paymentRequests];
+
+    // Filter by payment status
+    if (this.paymentStatusFilter !== 'all') {
+      filtered = filtered.filter(request => request.paymentStatus === this.paymentStatusFilter);
+    }
+
+    // Filter by search query
+    if (this.paymentSearchQuery.trim()) {
+      const query = this.paymentSearchQuery.toLowerCase();
+      filtered = filtered.filter(request => 
+        request.vehicleTitle.toLowerCase().includes(query) ||
+        request.sellerName.toLowerCase().includes(query) ||
+        request.sellerEmail.toLowerCase().includes(query) ||
+        request.transactionId.toLowerCase().includes(query)
+      );
+    }
+
+    this.filteredPaymentRequests = filtered;
+  }
+
+  onPaymentStatusFilterChange(event: any): void {
+    const status = event.target?.value;
+    if (status) {
+      this.paymentStatusFilter = status;
+      this.applyPaymentFilters();
+    }
+  }
+
+  onPaymentSearchChange(event: any): void {
+    const query = event.target?.value;
+    this.paymentSearchQuery = query || '';
+    this.applyPaymentFilters();
+  }
+
+  clearPaymentFilters(): void {
+    this.paymentStatusFilter = 'all';
+    this.paymentSearchQuery = '';
+    this.applyPaymentFilters();
+  }
+
+  updatePaymentStatus(requestId: string, event: any): void {
+    const status = event.target?.value;
+    const request = this.paymentRequests.find(r => r.id === requestId);
+    if (request && status) {
+      request.paymentStatus = status;
+      this.applyPaymentFilters(); // Refresh filters after status change
+      this.showNotification(`Payment status updated to ${status}`, 'success');
+    }
+  }
+
+  updatePaymentMethod(requestId: string, event: any): void {
+    const method = event.target?.value;
+    const request = this.paymentRequests.find(r => r.id === requestId);
+    if (request && method) {
+      request.paymentMethod = method;
+    }
+  }
+
+  updateTransactionId(requestId: string, event: any): void {
+    const transactionId = event.target?.value;
+    const request = this.paymentRequests.find(r => r.id === requestId);
+    if (request && transactionId !== undefined) {
+      request.transactionId = transactionId;
+    }
+  }
+
+  updatePaymentNotes(requestId: string, event: any): void {
+    const notes = event.target?.value;
+    const request = this.paymentRequests.find(r => r.id === requestId);
+    if (request && notes !== undefined) {
+      request.notes = notes;
+    }
+  }
+
+  markPaymentComplete(requestId: string): void {
+    const request = this.paymentRequests.find(r => r.id === requestId);
+    if (request) {
+      request.paymentStatus = 'completed';
+      request.paymentMethod = request.paymentMethod || 'Bank Transfer';
+      request.transactionId = request.transactionId || `TXN-${Date.now()}`;
+      this.showNotification('Payment marked as completed', 'success');
+    }
+  }
+
+  getPaymentStatusClass(status: string): string {
+    switch (status) {
+      case 'pending': return 'status-pending';
+      case 'processing': return 'status-processing';
+      case 'completed': return 'status-completed';
+      case 'failed': return 'status-failed';
+      default: return 'status-pending';
+    }
+  }
+
+  getPaymentStatusIcon(status: string): string {
+    switch (status) {
+      case 'pending': return '⏳';
+      case 'processing': return '🔄';
+      case 'completed': return '✅';
+      case 'failed': return '❌';
+      default: return '⏳';
+    }
+  }
+
+  getVehicleById(id: string): any {
+    return this.vehicleListings.find(vehicle => vehicle.id === id);
   }
 }
