@@ -1,0 +1,541 @@
+<div class="sell-container">
+  <div class="container">
+    <!-- Header Section -->
+    <div class="sell-header">
+      <h1 class="sell-title">Sell Your Vehicle</h1>
+      <p class="sell-subtitle">List your vehicle and reach thousands of potential buyers</p>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-section">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="(currentStep / totalSteps) * 100"></div>
+      </div>
+      <div class="progress-steps">
+        <div 
+          *ngFor="let step of [1,2,3,4]; let i = index"
+          class="progress-step"
+          [class.active]="currentStep === step"
+          [class.completed]="currentStep > step"
+          (click)="goToStep(step)"
+        >
+          <div class="step-number">{{ step }}</div>
+          <div class="step-label">{{ getStepTitle(step) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" *ngIf="isSubmitted">
+      <div class="success-content">
+        <svg class="success-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>Listing Submitted Successfully!</h2>
+        <p>Your vehicle listing has been submitted and is under review. You'll receive a confirmation email shortly.</p>
+        <button class="btn btn-primary" (click)="resetForm()">List Another Vehicle</button>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section" *ngIf="!isSubmitted">
+      <form class="sell-form" (ngSubmit)="onSubmit(sellForm)" #sellForm="ngForm">
+        
+        <!-- Step 1: Basic Information -->
+        <div class="form-step" *ngIf="currentStep === 1">
+          <div class="step-header">
+            <h2>{{ getStepTitle(1) }}</h2>
+            <p>{{ getStepDescription(1) }}</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="title">Vehicle Title *</label>
+              <input 
+                type="text" 
+                id="title"
+                name="title"
+                [(ngModel)]="vehicleData.title"
+                placeholder="e.g., 2020 Toyota Corolla Cross"
+                class="form-input"
+                [class.error]="validationErrors['title']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['title']">
+                {{ validationErrors['title'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="category">Category *</label>
+              <select 
+                id="category"
+                name="category"
+                [(ngModel)]="vehicleData.category"
+                class="form-select"
+                required
+              >
+                <option *ngFor="let category of categories" [value]="category.value">
+                  {{ category.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="brand">Brand *</label>
+              <select 
+                id="brand"
+                name="brand"
+                [(ngModel)]="vehicleData.brand"
+                class="form-select"
+                [class.error]="validationErrors['brand']"
+                required
+              >
+                <option value="">Select Brand</option>
+                <option *ngFor="let brand of brands" [value]="brand">{{ brand }}</option>
+              </select>
+              <div class="error-message" *ngIf="validationErrors['brand']">
+                {{ validationErrors['brand'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="model">Model *</label>
+              <input 
+                type="text" 
+                id="model"
+                name="model"
+                [(ngModel)]="vehicleData.model"
+                placeholder="e.g., Corolla Cross"
+                class="form-input"
+                [class.error]="validationErrors['model']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['model']">
+                {{ validationErrors['model'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="year">Year *</label>
+              <input 
+                type="number" 
+                id="year"
+                name="year"
+                [(ngModel)]="vehicleData.year"
+                min="1900"
+                [max]="maxYear"
+                class="form-input"
+                [class.error]="validationErrors['year']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['year']">
+                {{ validationErrors['year'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="price">Price (ZAR) *</label>
+              <input 
+                type="number" 
+                id="price"
+                name="price"
+                [(ngModel)]="vehicleData.price"
+                min="0"
+                placeholder="0"
+                class="form-input"
+                [class.error]="validationErrors['price']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['price']">
+                {{ validationErrors['price'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="condition">Condition *</label>
+              <select 
+                id="condition"
+                name="condition"
+                [(ngModel)]="vehicleData.condition"
+                class="form-select"
+                required
+              >
+                <option *ngFor="let condition of conditions" [value]="condition">
+                  {{ condition }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Vehicle Details -->
+        <div class="form-step" *ngIf="currentStep === 2">
+          <div class="step-header">
+            <h2>{{ getStepTitle(2) }}</h2>
+            <p>{{ getStepDescription(2) }}</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="mileage">Mileage (km) *</label>
+              <input 
+                type="number" 
+                id="mileage"
+                name="mileage"
+                [(ngModel)]="vehicleData.mileage"
+                min="0"
+                placeholder="0"
+                class="form-input"
+                [class.error]="validationErrors['mileage']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['mileage']">
+                {{ validationErrors['mileage'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="fuelType">Fuel Type *</label>
+              <select 
+                id="fuelType"
+                name="fuelType"
+                [(ngModel)]="vehicleData.fuelType"
+                class="form-select"
+                required
+              >
+                <option *ngFor="let fuel of fuelTypes" [value]="fuel">{{ fuel }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="transmission">Transmission *</label>
+              <select 
+                id="transmission"
+                name="transmission"
+                [(ngModel)]="vehicleData.transmission"
+                class="form-select"
+                required
+              >
+                <option *ngFor="let trans of transmissions" [value]="trans">{{ trans }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="engineSize">Engine Size</label>
+              <input 
+                type="text" 
+                id="engineSize"
+                name="engineSize"
+                [(ngModel)]="vehicleData.engineSize"
+                placeholder="e.g., 1.6L, 2.0L"
+                class="form-input"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="color">Color *</label>
+              <select 
+                id="color"
+                name="color"
+                [(ngModel)]="vehicleData.color"
+                class="form-select"
+                [class.error]="validationErrors['color']"
+                required
+              >
+                <option value="">Select Color</option>
+                <option *ngFor="let color of colors" [value]="color">{{ color }}</option>
+              </select>
+              <div class="error-message" *ngIf="validationErrors['color']">
+                {{ validationErrors['color'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="bodyType">Body Type *</label>
+              <select 
+                id="bodyType"
+                name="bodyType"
+                [(ngModel)]="vehicleData.bodyType"
+                class="form-select"
+                [class.error]="validationErrors['bodyType']"
+                required
+              >
+                <option value="">Select Body Type</option>
+                <option *ngFor="let body of bodyTypes" [value]="body">{{ body }}</option>
+              </select>
+              <div class="error-message" *ngIf="validationErrors['bodyType']">
+                {{ validationErrors['bodyType'] }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Features Section -->
+          <div class="features-section">
+            <h3>Vehicle Features</h3>
+            <p>Select all features that apply to your vehicle:</p>
+            <div class="features-grid">
+              <label 
+                *ngFor="let feature of commonFeatures"
+                class="feature-checkbox"
+                [class.selected]="isFeatureSelected(feature)"
+              >
+                <input 
+                  type="checkbox"
+                  [checked]="isFeatureSelected(feature)"
+                  (change)="toggleFeature(feature)"
+                >
+                <span class="checkmark"></span>
+                {{ feature }}
+              </label>
+            </div>
+          </div>
+
+          <!-- Additional Information -->
+          <div class="additional-info">
+            <h3>Additional Information</h3>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox"
+                  [(ngModel)]="vehicleData.serviceHistory"
+                  name="serviceHistory"
+                >
+                <span class="checkmark"></span>
+                Full service history available
+              </label>
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox"
+                  [(ngModel)]="vehicleData.accidentHistory"
+                  name="accidentHistory"
+                >
+                <span class="checkmark"></span>
+                No accident history
+              </label>
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox"
+                  [(ngModel)]="vehicleData.financingAvailable"
+                  name="financingAvailable"
+                >
+                <span class="checkmark"></span>
+                Financing available
+              </label>
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox"
+                  [(ngModel)]="vehicleData.warranty"
+                  name="warranty"
+                >
+                <span class="checkmark"></span>
+                Under warranty
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Contact Information -->
+        <div class="form-step" *ngIf="currentStep === 3">
+          <div class="step-header">
+            <h2>{{ getStepTitle(3) }}</h2>
+            <p>{{ getStepDescription(3) }}</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="contactName">Full Name *</label>
+              <input 
+                type="text" 
+                id="contactName"
+                name="contactName"
+                [(ngModel)]="vehicleData.contactName"
+                placeholder="Your full name"
+                class="form-input"
+                [class.error]="validationErrors['contactName']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['contactName']">
+                {{ validationErrors['contactName'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contactPhone">Phone Number *</label>
+              <input 
+                type="tel" 
+                id="contactPhone"
+                name="contactPhone"
+                [(ngModel)]="vehicleData.contactPhone"
+                placeholder="+27 11 123 4567"
+                class="form-input"
+                [class.error]="validationErrors['contactPhone']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['contactPhone']">
+                {{ validationErrors['contactPhone'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contactEmail">Email Address *</label>
+              <input 
+                type="email" 
+                id="contactEmail"
+                name="contactEmail"
+                [(ngModel)]="vehicleData.contactEmail"
+                placeholder="your.email@example.com"
+                class="form-input"
+                [class.error]="validationErrors['contactEmail']"
+                required
+              >
+              <div class="error-message" *ngIf="validationErrors['contactEmail']">
+                {{ validationErrors['contactEmail'] }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="location">Location *</label>
+              <select 
+                id="location"
+                name="location"
+                [(ngModel)]="vehicleData.location"
+                class="form-select"
+                [class.error]="validationErrors['location']"
+                required
+              >
+                <option value="">Select Location</option>
+                <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+              </select>
+              <div class="error-message" *ngIf="validationErrors['location']">
+                {{ validationErrors['location'] }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Description & Images -->
+        <div class="form-step" *ngIf="currentStep === 4">
+          <div class="step-header">
+            <h2>{{ getStepTitle(4) }}</h2>
+            <p>{{ getStepDescription(4) }}</p>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Vehicle Description *</label>
+            <textarea 
+              id="description"
+              name="description"
+              [(ngModel)]="vehicleData.description"
+              placeholder="Describe your vehicle in detail. Include any special features, recent maintenance, reason for selling, etc. (Minimum 50 characters)"
+              class="form-textarea"
+              [class.error]="validationErrors['description']"
+              rows="6"
+              required
+            ></textarea>
+            <div class="error-message" *ngIf="validationErrors['description']">
+              {{ validationErrors['description'] }}
+            </div>
+            <div class="character-count">
+              {{ vehicleData.description.length }}/500 characters
+            </div>
+          </div>
+
+          <!-- Image Upload Section -->
+          <div class="image-upload-section">
+            <h3>Vehicle Photos *</h3>
+            <p>Upload high-quality photos of your vehicle. At least one photo is required.</p>
+            
+            <div class="image-upload-area" [class.error]="validationErrors['images']">
+              <input 
+                type="file"
+                id="imageUpload"
+                name="imageUpload"
+                (change)="onImageSelected($event)"
+                multiple
+                accept="image/*"
+                class="image-input"
+              >
+              <label for="imageUpload" class="upload-label">
+                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="upload-text">Click to upload photos or drag and drop</span>
+                <span class="upload-hint">PNG, JPG, WEBP up to 5MB each</span>
+              </label>
+            </div>
+
+            <div class="error-message" *ngIf="validationErrors['images']">
+              {{ validationErrors['images'] }}
+            </div>
+
+            <!-- Image Previews -->
+            <div class="image-previews" *ngIf="imagePreviewUrls.length > 0">
+              <div 
+                *ngFor="let url of imagePreviewUrls; let i = index"
+                class="image-preview"
+              >
+                <img [src]="url" [alt]="'Vehicle image ' + (i + 1)">
+                <button 
+                  type="button"
+                  class="remove-image"
+                  (click)="removeImage(i)"
+                  title="Remove image"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="m15 9-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="form-navigation">
+          <button 
+            type="button"
+            class="btn btn-secondary"
+            (click)="previousStep()"
+            *ngIf="currentStep > 1"
+          >
+            Previous
+          </button>
+          
+          <div class="nav-spacer"></div>
+          
+          <button 
+            type="button"
+            class="btn btn-primary"
+            (click)="nextStep()"
+            *ngIf="currentStep < totalSteps"
+          >
+            Next
+          </button>
+          
+          <button 
+            type="submit"
+            class="btn btn-primary"
+            *ngIf="currentStep === totalSteps"
+            [disabled]="isLoading"
+          >
+            <span *ngIf="!isLoading">Submit Listing</span>
+            <span *ngIf="isLoading" class="loading-spinner">
+              <svg class="spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+                  <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
+                  <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+                </circle>
+              </svg>
+              Submitting...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
