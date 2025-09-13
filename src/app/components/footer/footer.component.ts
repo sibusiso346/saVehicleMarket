@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <footer class="footer">
       <div class="footer-content">
@@ -77,8 +78,8 @@ import { CommonModule } from '@angular/common';
           <div class="footer-section">
             <h4>Legal</h4>
             <ul class="footer-links">
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Privacy Policy</a></li>
+              <li><a routerLink="/terms-of-service">Terms of Service</a></li>
+              <li><a routerLink="/privacy-policy">Privacy Policy</a></li>
               <li><a href="#">Cookie Policy</a></li>
               <li><a href="#">Disclaimer</a></li>
               <li><a href="#">Refund Policy</a></li>

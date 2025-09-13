@@ -1,0 +1,238 @@
+.terms-container {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 2rem 0;
+}
+
+/* Header Section */
+.terms-header {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.terms-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.terms-subtitle {
+  font-family: var(--font-primary);
+  font-size: var(--text-lg);
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.last-updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+}
+
+.update-label {
+  color: #64748b;
+}
+
+.update-date {
+  color: #1e293b;
+  font-weight: var(--font-semibold);
+}
+
+/* Terms Content */
+.terms-content {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.terms-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.terms-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.terms-section h2 {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.terms-section p {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
+.terms-section ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.terms-section li {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.terms-section strong {
+  color: #1e293b;
+  font-weight: var(--font-bold);
+}
+
+/* Contact Information */
+.contact-info {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.contact-item {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.contact-item strong {
+  color: #1e293b;
+  font-weight: var(--font-semibold);
+}
+
+/* Footer Actions */
+.terms-footer {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-secondary {
+  background: white;
+  color: #3b82f6;
+  border: 2px solid #3b82f6;
+}
+
+.btn-secondary:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.footer-note {
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  color: #64748b;
+  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .terms-container {
+    padding: 1rem 0;
+  }
+
+  .terms-header,
+  .terms-content,
+  .terms-footer {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .terms-title {
+    font-size: var(--text-3xl);
+  }
+
+  .terms-section h2 {
+    font-size: var(--text-xl);
+  }
+
+  .footer-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-header,
+  .terms-content,
+  .terms-footer {
+    padding: 1rem;
+  }
+
+  .terms-title {
+    font-size: var(--text-2xl);
+  }
+
+  .terms-section ul {
+    padding-left: 1rem;
+  }
+
+  .contact-info {
+    padding: 1rem;
+  }
+}

@@ -148,7 +148,7 @@
             [class.error]="(termsInput.invalid && termsInput.touched) || validationErrors.terms"
           >
           <span class="checkmark"></span>
-          I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="terms-link">Privacy Policy</a>
+          I agree to the <a routerLink="/terms-of-service" class="terms-link" target="_blank">Terms of Service</a> and <a routerLink="/privacy-policy" class="terms-link" target="_blank">Privacy Policy</a>
         </label>
         <div class="error-message" *ngIf="(termsInput.invalid && termsInput.touched) || validationErrors.terms">
           <span *ngIf="termsInput.errors?.['required'] && termsInput.touched">You must agree to the terms</span>
